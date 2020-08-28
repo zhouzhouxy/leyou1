@@ -1,0 +1,56 @@
+server:
+  port: 10010
+spring:
+  application:
+    name: api-gateway
+  main:
+    allow-bean-definition-overriding: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:10086/eureka
+    registry-fetch-interval-seconds: 5  # 从eureka服务器注册表中获取注册表中获取注册信息的时间间隔(s),默认为30秒
+  instance:
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
+    instance-id: ${spring.application.name}:${server.port}
+zuul:
+  prefix: /api # 添加路由前缀
+  retryable: true   # 是否可重试
+  routes:
+    item-service: /item/**    # 将商品微服务映射到/item/**
+    search-service: /search/**  # 搜索微服务
+    user-service: /user/**  # 用户微服务
+    auth-service: /auth/**  # 授权中心微服务
+    cart-service: /cart/**  #购物车微服务
+  ignored-services:
+    - upload-service  # 忽略upload-service服务  绕过网关，造成不必要的负担
+  #ignored-patterns: /upload/**  用来忽略不希望路由的URL路径
+  #ignored-patterns: /ws/**  #用来忽略不希望路由的URL路径
+  sensitive-headers: Access-Control-Allow-Origin
+  ignored-headers: Access-Control-Allow-Credentials,Access-Control-Allow-Origin,Vary,X-Frame-Options,token
+  add-host-header: true # 携带请求本身的head头信息
+ribbon:   # riibbon 是负载均衡
+  ConnecTimeout: 250 #  连接超时时间(ms)
+  ReadTimeout: 2000 # 通信超时时间(ms)
+  OkToRetryOnAllOperations: true # 同一服务不同实例重试次数
+  MaxAutoRetriesNextServer: 1 # 同一实例的重试次数
+hystrix:    # 熔断
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMillisecond: 10000 # 熔断时长 10000ms
+leyou:
+  jwt:
+    pubKeyPath: C:\TEMP\rsa\rsa.pub # 公钥地址
+    cookieName: LY_TOKEN #cookie的名称
+  filter:
+    allowPaths:
+      - /api/auth
+      - /api/search
+      - /api/user/register
+      - /api/user/check
+      - /api/user/code
+      - /api/item

@@ -1,0 +1,35 @@
+server:
+  port: 8081
+spring:
+  rabbitmq:
+    host: 192.168.25.128
+    username: leyou
+    password: leyou
+    virtual-host: leyou.item.exchange
+    template:   #有关AmqpTemplate的配置
+       exchange: leyou.item.exchange # 缺省的交换机名称，此处配置后，发送消息如果不指定交换机就会使用这个
+    publisher-confirms: true    # 生产者确认机制，确保消息会正确发送，如果失败会有错误回执。从而触发重试
+    #virtual-host: /leyou
+  application:
+    name: item-service
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    hikari:
+      username: root
+      password: root
+      maximum-pool-size: 30
+      minimum-idle: 10
+    url: jdbc:mysql:///heima?useUnicode=true&characterEncoding=utf-8
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:10086/eureka
+  instance:
+    lease-expiration-duration-in-seconds: 10 # 10秒不发送就过期
+    lease-renewal-interval-in-seconds: 5 # 每隔5秒发送一次心跳
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
+    instance-id: ${spring.application.name}:${server.port}
+logging:
+  level:
+    com.asura.leyou.item.mapper: debug

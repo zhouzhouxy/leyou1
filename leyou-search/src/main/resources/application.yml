@@ -1,0 +1,28 @@
+server:
+  port: 8083
+spring:
+  rabbitmq:
+    virtual-host: /leyou
+    host: 192.168.25.128
+    username: leyou
+    password: leyou
+  elasticsearch:
+    rest:
+      uris: ["192.168.59.130:9200"]
+  jackson:
+    default-property-inclusion: non_null  # 配置json处理时忽略空值
+  application:
+    name: search-service
+  data:
+    elasticsearch:
+      cluster-name: elasticsearch
+      cluster-nodes: 192.168.59.130:9300
+  main:
+    allow-bean-definition-overriding: true  #因为使用了多个@FeignClient("item-service") 所以要允许覆盖
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:10086/eureka
+  instance:
+    lease-expiration-duration-in-seconds: 10  # 10秒不发送就过期
+    lease-renewal-interval-in-seconds: 5 # 每隔5秒发送一次心跳
